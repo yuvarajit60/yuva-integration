@@ -1,0 +1,44 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>Scalar brake plus units job is executed to activate units. Please find attached the report. The status and brief summary of the job execution are as follows.</p>
+        <br>
+
+        <table>
+			<tr>
+				<td style="font-weight:bold">Environment: </td>
+				<td style="font-weight:bold">${environment}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Job execution time: </td>
+				<td>${job_execution_time}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Job execution message: </td>
+				<td>${job_exectution_message}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Activated brake plus units: </td>
+				<td>${bp_activated_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Truly activated brake plus units:: </td>
+				<td>${truly_bp_activated_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Falsely activated brake plus units: </td>
+				<td>${falsely_bp_activated_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Failed to activate brake plus units: </td>
+				<td>${bp_activation_failed_unit_count}</td>
+			</tr>
+        </table>
+
+        <div>
+            <p>Regards<br>
+            Scalar Integration Team</p>
+        </div>
+        
+    </body>
+</html>

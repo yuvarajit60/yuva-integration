@@ -1,0 +1,73 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>Customer session data sync has been completed successfully. Please find the current data sharing details below.</p>
+        <br>
+
+        <table>
+			<tr>
+				<td style="font-weight:bold">Environment: </td>
+				<td style="font-weight:bold">${environment}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Execution time: </td>
+				<td>${exectution_time}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Root Organization ID: </td>
+				<td>${root_organization_id}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Root Organization Name: </td>
+				<td>${root_organization_name}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">ZF/Shared Customer: </td>
+				<td>${zf_consumer_flag}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">New sessions added in SCALAR DB: </td>
+				<td>${new_sessions_added}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Existing sessions updated in SCALAR DB: </td>
+				<td>${existing_sessions_updated}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Sessions deactivated in SCALAR DB: </td>
+				<td>${deactivated_sessions}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Current total data sharing in SCALAR:</td>
+				<td>${current_total_data_sharing_in_scalar}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Current active data sharing in SCALAR:</td>
+				<td>${current_active_data_sharing_in_scalar}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Current active data sharing in SKY:</td>
+				<td>${current_active_data_sharing_in_sky}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Matched data sharing in SKY and SCALAR</td>
+				<td>${matched_data_sharing_in_sky_and_scalar}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Missing data sharing in SCALAR</td>
+				<td>${missing_data_sharing_in_scalar}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Missing data sharing in SKY</td>
+				<td>${missing_data_sharing_in_sky}</td>
+			</tr>
+        </table>
+
+        <br>
+        <div>
+            <p>Regards<br>
+            Scalar App Team</p>
+        </div>
+        
+    </body>
+</html>

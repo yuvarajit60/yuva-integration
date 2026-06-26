@@ -1,0 +1,42 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>Asset data sync successfully completed. Please find the details below.</p>
+        <br>
+
+        <table>
+			<tr>
+				<td style="font-weight: bold">Environment:</td>
+				<td style="font-weight: bold">${environment}</td>
+			</tr>
+			<tr>
+				<td style="font-weight: bold">Execution time:</td>
+				<td>${execution_time}</td>
+			</tr>
+
+			<tr>
+				<td style="font-weight:bold">Total number of assets from API: </td>
+				<td>${total_asset}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">New assets added: </td>
+				<td>${new_asset}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Existing assets updated: </td>
+				<td>${existing_asset}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Assets deactivated: </td>
+				<td>${deactivate_asset}</td>
+			</tr>
+
+        </table>
+
+        <div>
+            <p>Regards<br>
+            Scalar Integration Team</p>
+        </div>
+        
+    </body>
+</html>

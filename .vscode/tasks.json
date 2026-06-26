@@ -1,0 +1,53 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "func: host start",
+            "type": "shell",
+            "command": "$env:VIRTUAL_ENV='${workspaceFolder}\\.venv'; $env:PATH='${workspaceFolder}\\.venv\\Scripts;' + $env:PATH; func host start",
+            "options": {
+                "shell": {
+                    "executable": "powershell.exe",
+                    "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
+                },
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                {
+                    "owner": "azure-functions",
+                    "pattern": [
+                        {
+                            "regexp": "^.*$",
+                            "message": 0
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": "^.*Azure Functions Core Tools.*$",
+                        "endsPattern": "^.*(Host lock lease acquired|Worker process started and initialized).*$"
+                    }
+                }
+            ],
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "echo": true
+            },
+            "dependsOn": "pip install (functions)"
+        },
+        {
+            "label": "pip install (functions)",
+            "type": "shell",
+            "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt",
+            "options": {
+                "shell": {
+                    "executable": "powershell.exe",
+                    "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
+                },
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

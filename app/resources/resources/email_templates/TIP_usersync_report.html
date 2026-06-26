@@ -1,0 +1,69 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>TIP user data sync successfully completed. Please find the details below.</p>
+        <br>
+
+        <table>
+			<tr>
+				<td style="font-weight:bold">Environment: </td>
+				<td style="font-weight:bold">${environment}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Execution time: </td>
+				<td>${exectution_time}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">New users added: </td>
+				<td>${new_users_added}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Existing users updated: </td>
+				<td>${existing_users_updated}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Deleted users: </td>
+				<td>${deleted_users}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">User syncing error: </td>
+				<td>${users_failed_to_sync}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Role mapped for users: </td>
+				<td>${users_for_role_mapping}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Role mapping error: </td>
+				<td>${users_failed_to_map_roles}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Total number of active users from SCALAR: </td>
+				<td>${scalar_total_users}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Total number of active users from SKY: </td>
+				<td>${sky_total_users}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Matched users in SKY and SCALAR: </td>
+				<td>${matching_users_data_in_sky_scalar}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Missing users in SKY: </td>
+				<td>${missing_users_data_in_sky}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Missing users in SCALAR: </td>
+				<td>${missing_users_data_in_scalar}</td>
+			</tr>
+        </table>
+
+        <br>
+        <div>
+            <p>Regards<br>
+            Scalar App Team</p>
+        </div>
+        
+    </body>
+</html>

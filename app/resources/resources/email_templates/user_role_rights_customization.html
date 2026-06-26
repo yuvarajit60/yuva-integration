@@ -1,0 +1,57 @@
+<html>
+    <body>
+        <p>Dear Insight team,</p>
+        <p>A user has requested for customizing the FleectConnected ${customized_for}. Please find the user details below.</p>
+
+        <table>
+			<tr>
+				<td style="font-weight:bold">Environment: </td>
+				<td style="font-weight:bold">${environment}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">First name: </td>
+				<td>${user_first_name}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Last name: </td>
+				<td>${user_last_name}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Email Id: </td>
+				<td>${user_email}</td>
+			</tr>
+			${permission_html_str}
+			<tr>
+				<td style="font-weight:bold">Root Organization: </td>
+				<td>${user_root_organization}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Organization: </td>
+				<td>${user_organization}</td>
+			</tr>
+        </table>
+
+        <p>Please contact below super user who might help you get the further details about customization to be done</p>
+        <table>
+			<tr>
+				<td style="font-weight:bold">First name: </td>
+				<td>${super_user_first_name}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Last name: </td>
+				<td>${super_user_last_name}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Email Id: </td>
+				<td>${super_user_email}</td>
+			</tr>
+        </table>
+
+        <br>
+        <div>
+            <p>Regards<br>
+            FleetConnected App Team</p>
+        </div>
+        
+    </body>
+</html>

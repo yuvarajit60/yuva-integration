@@ -1,0 +1,45 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>Framework Agreement data sync successfully completed. Please find the details below.</p>
+        <br>
+
+        <table>
+			<tr>
+				<td style="font-weight:bold">Environment: </td>
+				<td style="font-weight:bold">${environment}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Execution time: </td>
+				<td>${exectution_time}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Total number of agreements from Input table: </td>
+				<td>${total_framework_agreements_db}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Synced agreements from Scalar: </td>
+				<td>${total_framework_agreements_api}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Organizations without SSO: </td>
+				<td>${orgs_without_sso}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Frameworks without integrator details: </td>
+				<td>${missing_integrator_details}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Framework syncing errors: </td>
+				<td>${errors}</td>
+			</tr>
+        </table>
+
+        <br>
+        <div>
+            <p>Regards<br>
+            Scalar App Team</p>
+        </div>
+        
+    </body>
+</html>

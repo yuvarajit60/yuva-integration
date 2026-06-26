@@ -1,0 +1,25 @@
+# Virtual environment
+.venv/
+
+# Azure Functions local secrets — NEVER commit this file
+local.settings.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+
+# VS Code
+.vscode/settings.json
+
+# Azure
+bin/
+obj/
+.azure/
+*.zip
+
+# Byte-compiled / dist
+*.egg-info/
+dist/
+build/

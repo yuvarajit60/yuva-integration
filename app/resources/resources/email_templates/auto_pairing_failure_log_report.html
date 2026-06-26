@@ -1,0 +1,47 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>Please find attached the report of auto pairing events which got failed to process ${message} at Insight.</p>
+        <br>
+
+        <table>
+			<tr>
+				<td style="font-weight:bold">Environment: </td>
+				<td>${environment}</td>
+            </tr>
+            <tr>
+				<td style="font-weight:bold">Device paired failed event count: </td>
+				<td>${device_paired_failed}</td>
+            </tr>
+            <tr>
+				<td style="font-weight:bold">Device Manual paired failed event count: </td>
+				<td>${device_manual_paired_failed}</td>
+            </tr>
+            <td style="font-weight:bold">Device Manual unpaired failed event count: </td>
+				<td>${device_manual_unpaired_failed}</td>
+            </tr>
+            <tr>
+				<td style="font-weight:bold">Vin not found failed event count: </td>
+				<td>${vin_not_found_failed}</td>
+            </tr>
+            <tr>
+				<td style="font-weight:bold">Multiple VIN found failed event count: </td>
+				<td>${multi_match_found_failed}</td>
+			</tr>
+            <tr>
+				<td style="font-weight:bold">Invalid data event count: </td>
+				<td>${invalid_data}</td>
+            </tr>
+            <tr>
+				<td style="font-weight:bold">Unknown data event count: </td>
+				<td>${unknown_data}</td>
+            </tr>
+        </table>
+
+        <div>
+            <p>Regards<br>
+            FleetConnected App Team</p>
+        </div>
+        
+    </body>
+</html>

@@ -1,0 +1,132 @@
+import os
+import azure.functions as func
+
+if os.environ.get('PYTHON_ENABLE_DEBUGPY') == 'true':
+    import debugpy
+    os.environ['PYDEVD_DISABLE_FILE_VALIDATION'] = '1'
+    debugpy.listen(('0.0.0.0', 9091))
+    print('[DEBUG] debugpy listening on port 9091')
+
+# Assets
+from app.assets.asset_datasync.assetsync_blueprint import assetsync_bp
+from app.assets.asset_upload.asset_upload_blueprint import asset_upload_bp
+from app.assets.auto_pairing.auto_pairing_blueprint import autopairing_bp
+from app.assets.auto_pairing_report.auto_pairing_report_blueprint import auto_pairing_report_bp
+
+# Asset Groups
+from app.asset_groups.activate_asset_group.activate_asset_group_blueprint import activate_asset_group_bp
+from app.asset_groups.create_asset_group.create_asset_group_blueprint import create_asset_group_bp
+from app.asset_groups.deactivate_asset_group.deactivate_asset_group_blueprint import deactivate_asset_group_bp
+from app.asset_groups.remove_asset_group.remove_asset_group_blueprint import remove_asset_group_bp
+from app.asset_groups.update_asset_group.update_asset_group_blueprint import update_asset_group_bp
+
+# Brake Performance
+from app.brake_performance.brake_performance_activate.brake_performance_activate_blueprint import brakeperformanceactivate_bp
+from app.brake_performance.brake_performance_datasync.brake_performance_datasync_blueprint import brakeperformancesync_bp
+from app.brake_performance.brake_performance_deactivate.brake_performance_deactivate_blueprint import brakeperformancedeactivate_bp
+
+# Customer Onboarding
+from app.customer_onboarding.customer_onboarding_blueprint import customeronboarding_bp
+from app.customer_onboarding.customer_onboarding_failure_recovery_blueprint import customeronboardingfailurerecovery_bp
+
+# Data Sharing
+from app.data_sharing.assign_combinumbers.assign_combinumbers_blueprint import assign_combinumbers_bp
+from app.data_sharing.copy_move_along_units.copy_move_along_blueprint import copy_move_along_bp
+from app.data_sharing.datasharing_control_report.datasharing_control_blueprint import session_control_bp
+from app.data_sharing.deassign_combinumbers.deassign_combinumbers_blueprint import deassign_combi_bp
+from app.data_sharing.interchange_in_units.interchange_in_units_blueprint import interchange_in_bp
+from app.data_sharing.interchange_out_units.interchange_out_units_blueprint import interchange_out_bp
+from app.data_sharing.new_pairing_insight_units.new_pairing_blueprint import new_pairing_bp
+from app.data_sharing.session_datasync.sessionsync_blueprint import sessionsync_bp
+from app.data_sharing.update_data_sharing.update_data_sharing_blueprint import update_data_sharing_bp
+
+# Users
+from app.users.create_user.create_user_blueprint import create_user_bp
+from app.users.get_scalar_org_details.get_scalar_org_details_blueprint import user_org_bp
+from app.users.get_scalar_roles.get_scalar_roles_blueprint import role_org
+from app.users.remove_user.remove_user_blueprint import remove_user_bp
+from app.users.update_user.update_user_blueprint import update_user_bp
+from app.users.user_datasync.usersync_blueprint import usersync_bp
+
+# FleetConnected Migration
+from app.fleetconnected_migration.customer_migration.customer_asset_assignment_blueprint import customer_asset_assignment_bp
+from app.fleetconnected_migration.customer_migration.customer_asset_group_hierarchy_blueprint import customer_asset_group_hierarchy_bp
+from app.fleetconnected_migration.customer_migration.customer_end_to_end_migration_blueprint import customer_end_to_end_migration_bp
+from app.fleetconnected_migration.customer_migration.customer_sessionsync_blueprint import customer_sessionsync_bp
+from app.fleetconnected_migration.customer_migration.customer_user_assignment_blueprint import customer_user_assignment_bp
+from app.fleetconnected_migration.customer_migration.customer_usersync_blueprint import customer_usersync_bp
+from app.fleetconnected_migration.customer_migration.get_scalar_migration_status_blueprint import consumer_migration_status_bp
+from app.fleetconnected_migration.tip_migration.get_tip_migration_status_blueprint import tip_migration_status_bp
+from app.fleetconnected_migration.tip_migration.tip_asset_assignment_blueprint import tip_asset_assignment_bp
+from app.fleetconnected_migration.tip_migration.tip_assetsync_blueprint import sync_SKY_TIP_Asset_bp
+from app.fleetconnected_migration.tip_migration.tip_end_to_end_migration_blueprint import tip_end_to_end_migration_bp
+from app.fleetconnected_migration.tip_migration.tip_framework_agreement_sync_blueprint import tip_frameworkagreement_sync_bp
+from app.fleetconnected_migration.tip_migration.tip_hierarchy_blueprint import tip_hierarchy_bp
+from app.fleetconnected_migration.tip_migration.tip_user_assignment_blueprint import tip_user_assignment_bp
+from app.fleetconnected_migration.tip_migration.tip_usersync_blueprint import sync_SKY_TIP_User_bp
+
+# Test
+from app.test.testfetchassetsfromassetgroup import fetchassetsfromassetgroup_bp
+
+app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
+
+# Assets
+app.register_blueprint(assetsync_bp)
+app.register_blueprint(asset_upload_bp)
+app.register_blueprint(autopairing_bp)
+app.register_blueprint(auto_pairing_report_bp)
+
+# Asset Groups
+app.register_blueprint(activate_asset_group_bp)
+app.register_blueprint(create_asset_group_bp)
+app.register_blueprint(deactivate_asset_group_bp)
+app.register_blueprint(remove_asset_group_bp)
+app.register_blueprint(update_asset_group_bp)
+
+# Brake Performance
+app.register_blueprint(brakeperformanceactivate_bp)
+app.register_blueprint(brakeperformancesync_bp)
+app.register_blueprint(brakeperformancedeactivate_bp)
+
+# Customer Onboarding
+app.register_blueprint(customeronboarding_bp)
+app.register_blueprint(customeronboardingfailurerecovery_bp)
+
+# Data Sharing
+app.register_blueprint(assign_combinumbers_bp)
+app.register_blueprint(copy_move_along_bp)
+app.register_blueprint(session_control_bp)
+app.register_blueprint(deassign_combi_bp)
+app.register_blueprint(interchange_in_bp)
+app.register_blueprint(interchange_out_bp)
+app.register_blueprint(new_pairing_bp)
+app.register_blueprint(sessionsync_bp)
+app.register_blueprint(update_data_sharing_bp)
+
+# Users
+app.register_blueprint(create_user_bp)
+app.register_blueprint(user_org_bp)
+app.register_blueprint(role_org)
+app.register_blueprint(remove_user_bp)
+app.register_blueprint(update_user_bp)
+app.register_blueprint(usersync_bp)
+
+# FleetConnected Migration
+app.register_blueprint(customer_asset_assignment_bp)
+app.register_blueprint(customer_asset_group_hierarchy_bp)
+app.register_blueprint(customer_end_to_end_migration_bp)
+app.register_blueprint(customer_sessionsync_bp)
+app.register_blueprint(customer_user_assignment_bp)
+app.register_blueprint(customer_usersync_bp)
+app.register_blueprint(consumer_migration_status_bp)
+app.register_blueprint(tip_migration_status_bp)
+app.register_blueprint(tip_asset_assignment_bp)
+app.register_blueprint(sync_SKY_TIP_Asset_bp)
+app.register_blueprint(tip_end_to_end_migration_bp)
+app.register_blueprint(tip_frameworkagreement_sync_bp)
+app.register_blueprint(tip_hierarchy_bp)
+app.register_blueprint(tip_user_assignment_bp)
+app.register_blueprint(sync_SKY_TIP_User_bp)
+
+# Test
+app.register_blueprint(fetchassetsfromassetgroup_bp)

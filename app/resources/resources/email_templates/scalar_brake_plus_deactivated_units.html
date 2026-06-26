@@ -1,0 +1,44 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>Scalar brake plus units job is executed to deactivate units. Please find attached the report. The status and brief summary of the job execution are as follows.</p>
+        <br>
+
+        <table>
+			<tr>
+				<td style="font-weight:bold">Environment: </td>
+				<td style="font-weight:bold">${environment}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Job execution time: </td>
+				<td>${job_execution_time}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Job execution message: </td>
+				<td>${job_exectution_message}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Deactivated brake plus units: </td>
+				<td>${bp_deactivated_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Truly deactivated brake plus units:: </td>
+				<td>${truly_bp_deactivated_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Falsely deactivated brake plus units: </td>
+				<td>${falsely_bp_deactivated_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Failed to deactivate brake plus units: </td>
+				<td>${bp_deactivation_failed_unit_count}</td>
+			</tr>
+        </table>
+
+        <div>
+            <p>Regards<br>
+            Scalar Integration Team</p>
+        </div>
+        
+    </body>
+</html>

@@ -1,0 +1,42 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>Brake performance asset data sync successfully completed. Please find the details below.</p>
+        <br>
+
+        <table>
+			<tr>
+				<td style="font-weight: bold">Environment:</td>
+				<td style="font-weight: bold">${environment}</td>
+			</tr>
+			<tr>
+				<td style="font-weight: bold">Execution time:</td>
+				<td>${execution_time}</td>
+			</tr>
+
+			<tr>
+				<td style="font-weight:bold">Total number of bp assets from API: </td>
+				<td>${total_asset}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">New bp assets added: </td>
+				<td>${new_asset}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Existing bp assets updated: </td>
+				<td>${existing_asset}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">BP assets deactivated: </td>
+				<td>${deactivate_asset}</td>
+			</tr>
+
+        </table>
+
+        <div>
+            <p>Regards<br>
+            Scalar Integration Team</p>
+        </div>
+        
+    </body>
+</html>

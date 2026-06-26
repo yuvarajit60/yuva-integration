@@ -1,0 +1,76 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>Insight brake plus units job is executed. Please find attached the report. The status and brief summary of the job execution are as follows.</p>
+        <br>
+
+        <table>
+			<tr>
+				<td style="font-weight:bold">Environment: </td>
+				<td style="font-weight:bold">${environment}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Job execution time: </td>
+				<td>${job_exectution_time}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Job execution message: </td>
+				<td>${job_exectution_message}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Total units to be activated with NULL ID: </td>
+				<td>${to_be_activated_unit_with_null_id_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Total units to be activated with EBPMS: </td>
+				<td>${total_to_be_activated_brake_plus_units_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Activated brake plus units: </td>
+				<td>${bp_activated_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Truly activated brake plus units:: </td>
+				<td>${truly_bp_activated_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Falsely activated brake plus units: </td>
+				<td>${falsely_bp_activated_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Failed to activate brake plus units: </td>
+				<td>${bp_activation_failed_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Total units to be deactivated with EBPMS: </td>
+				<td>${total_to_be_deactivated_brake_plus_units_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Dectivated brake plus units: </td>
+				<td>${bp_deactivated_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Truly deactivated brake plus units:: </td>
+				<td>${truly_bp_deactivated_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Falsely deactivated brake plus units: </td>
+				<td>${falsely_bp_deactivated_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Failed to deactivate brake plus units: </td>
+				<td>${bp_deactivation_failed_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Unknown errors occurred: </td>
+				<td>${error_list_count}</td>
+			</tr>
+        </table>
+
+        <div>
+            <p>Regards<br>
+            FleetConnected App Team</p>
+        </div>
+        
+    </body>
+</html>

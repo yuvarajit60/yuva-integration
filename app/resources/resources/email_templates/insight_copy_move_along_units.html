@@ -1,0 +1,65 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>Insight Copy-Move-Along units have been processed. Please find attached the report. The status and brief summary of the process execution are as follows.</p>
+        <br>
+
+        <table>
+			<tr>
+				<td style="font-weight:bold">Environment: </td>
+				<td style="font-weight:bold">${environment}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Execution time: </td>
+				<td>${exectution_time}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Execution message: </td>
+				<td>${exectution_message}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Total Copy-Move-Along units with Insight additional charges: </td>
+				<td>${total_units_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Units missing ROOT organization: </td>
+				<td>${units_wout_root_org_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Units without pairing info: </td>
+				<td>${units_wout_pairing_info_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Units without customer organization record: </td>
+				<td>${consumer_issues_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Successfully datashared units: </td>
+				<td>${data_shared_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Already datashared units in same organization: </td>
+				<td>${already_data_shared_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Already datashared units in different organization: </td>
+				<td>${already_data_shared_in_diff_org_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Unknown errors occurred: </td>
+				<td>${error_list_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Last successful job execution time: </td>
+				<td>${last_successful_execution_ts}</td>
+			</tr>
+        </table>
+
+        <br>
+        <div>
+            <p>Regards<br>
+            Scalar App Team</p>
+        </div>
+        
+    </body>
+</html>

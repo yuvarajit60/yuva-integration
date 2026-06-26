@@ -1,0 +1,20 @@
+# DO NOT include azure-functions-worker in this file
+# The Python Worker is managed by Azure Functions platform
+# Manually managing azure-functions-worker may cause unexpected issues
+
+azure-functions
+azure-functions-durable
+azure-storage-queue
+azure-storage-blob
+requests
+pandas==3.0.0
+xlsxwriter==3.2.9
+sqlalchemy==2.0.46
+pyodbc==5.3.0
+marshmallow
+marshmallow_dataclass
+numpy==2.2.4
+zeep==3.4.0
+openpyxl
+cryptography==43.0.3
+msal

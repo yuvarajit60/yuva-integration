@@ -1,0 +1,43 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>Session data sync successfully completed. Please find the details below.</p>
+        <br>
+
+        <table>
+			<tr>
+				<td style="font-weight:bold">Environment: </td>
+				<td style="font-weight:bold">${environment}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Execution time: </td>
+				<td>${exectution_time}</td>
+			</tr>
+				<td style="font-weight:bold">Total number of sessions in Database: </td>
+				<td>${sessions_from_db}</td>
+			<tr>
+				<td style="font-weight:bold">Total number of sessions from API: </td>
+				<td>${sessions_from_api}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">New sessions added: </td>
+				<td>${new_sessions_added}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Existing sessions updated: </td>
+				<td>${existing_sessions_updated}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Sessions deactivated: </td>
+				<td>${deactivated_sessions}</td>
+			</tr>
+        </table>
+
+        <br>
+        <div>
+            <p>Regards<br>
+            Scalar App Team</p>
+        </div>
+        
+    </body>
+</html>

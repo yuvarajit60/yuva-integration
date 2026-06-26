@@ -1,0 +1,36 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>Asset Group vs API comparison report has been generated successfully. Please find the Excel report attached.</p>
+        <br>
+
+        <table>
+            <tr>
+                <td style="font-weight: bold">Environment:</td>
+                <td style="font-weight: bold">${environment}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">Execution Time:</td>
+                <td>${execution_time}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">Total Organizations Processed:</td>
+                <td>${total_organizations}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold">Total Asset Group Rows in Report:</td>
+                <td>${total_rows}</td>
+            </tr>
+        </table>
+
+        <br>
+        <p>The attached report highlights asset group rows in <span style="background-color:#FFC7CE; padding:2px 6px;">red</span> where API and DB counts differ,
+        and in <span style="background-color:#C6EFCE; padding:2px 6px;">green</span> where they match.</p>
+
+        <div>
+            <p>Regards<br>
+            Scalar Integration Team</p>
+        </div>
+
+    </body>
+</html>

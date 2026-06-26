@@ -1,0 +1,60 @@
+<html>
+    <body>
+        <p>Dear team,</p>
+        <p>Insight interchange in units job is executed. Please find attached the report. The status and brief summary of the job execution are as follows.</p>
+        <br>
+
+        <table>
+			<tr>
+				<td style="font-weight:bold">Environment: </td>
+				<td style="font-weight:bold">${environment}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Job execution time: </td>
+				<td>${job_exectution_time}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Job execution message: </td>
+				<td>${job_exectution_message}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Total units with insight interchange in transactions: </td>
+				<td>${total_intch_in_units_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Units missing root organization: </td>
+				<td>${units_wout_root_org_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Units without pairing info: </td>
+				<td>${units_wout_pairing_info_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Units with consumer issues: </td>
+				<td>${consumer_issues_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Successfully datasharing stopped units: </td>
+				<td>${datasharing_removed_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Datasharing not found units: </td>
+				<td>${datasharing_not_exist_unit_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Unknown errors occurred: </td>
+				<td>${error_list_count}</td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold">Last successful job execution time: </td>
+				<td>${last_successful_execution_ts}</td>
+			</tr>
+        </table>
+
+        <div>
+            <p>Regards<br>
+            FleetConnected App Team</p>
+        </div>
+        
+    </body>
+</html>

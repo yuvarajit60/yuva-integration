@@ -182,13 +182,11 @@ def fetchassetsfromassetgroup_api(req: func.HttpRequest) -> func.HttpResponse:
         )
         logger.info("Report email sent successfully.")
 
+        response = Response(status=True, message=f"Report generated for {len(sc_org_df)} organization(s) with {len(report_df)} row(s). Email sent to {', '.join(receivers)}.")
         return func.HttpResponse(
-            body=excel_bytes,
-            status_code=200,
-            headers={
-                "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "Content-Disposition": f"attachment; filename={filename}"
-            }
+            response.getJsonResponse(),
+            status_code=ResponseCode.SUCCESS,
+            mimetype=ContentType.APPLICATION_JSON
         )
 
     except Exception as e:

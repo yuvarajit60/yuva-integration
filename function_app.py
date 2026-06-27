@@ -67,6 +67,8 @@ from app.fleetconnected_migration.tip_migration.tip_usersync_blueprint import sy
 
 # Test
 from app.test.testfetchassetsfromassetgroup import fetchassetsfromassetgroup_bp
+from app.test.testlogger import test_logger_bp
+from app.test.testloggerqueue import logger_queue_bp
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 
@@ -130,3 +132,5 @@ app.register_blueprint(sync_SKY_TIP_User_bp)
 
 # Test
 app.register_blueprint(fetchassetsfromassetgroup_bp)
+app.register_blueprint(test_logger_bp)
+app.register_blueprint(logger_queue_bp)

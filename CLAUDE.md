@@ -16,34 +16,23 @@ Debugging is done via VS Code: run the **"Attach to Python Functions"** launch c
 
 There are no automated tests. Verification is done by calling endpoints locally with HTTP clients.
 
-## Double-Folder Import Structure
+## Module Structure
 
-Every module uses a non-standard double-folder layout. The actual files live at the inner path:
+Each top-level module lives directly under `app/` with a standard flat layout:
 
 ```
-app/assets/assets/           ← real files here
-app/common/common/           ← real files here
-app/data_sharing/data_sharing/
+app/assets/asset_datasync/   ← files live directly here
+app/common/scalar_api/
+app/data_sharing/session_datasync/
 ```
 
-The outer `__init__.py` at `app/assets/__init__.py` redirects `app.assets` → `app/assets/assets/` via:
-
-```python
-import os as _os
-__path__ = [_os.path.join(_os.path.dirname(__file__), 'assets')]
-```
-
-**Every module folder needs this `__path__` redirect.** Without it, imports like `from app.assets.asset_datasync.assetsync_blueprint import ...` fail at runtime even though Pylance may not flag them.
-
-Imports in `function_app.py` must include the subfolder level:
+Imports in `function_app.py` must include the feature subfolder level:
 ```python
 # Correct
 from app.data_sharing.assign_combinumbers.assign_combinumbers_blueprint import assign_combinumbers_bp
 # Wrong (missing subfolder)
 from app.data_sharing.assign_combinumbers_blueprint import assign_combinumbers_bp
 ```
-
-Pylance will show "could not be resolved" warnings for paths that go through `__path__` redirects — these are static-analysis false positives and can be ignored. Runtime imports work correctly.
 
 ## Feature Module Structure
 
@@ -55,9 +44,9 @@ Every feature follows the same 3-layer pattern:
 *_data_access.py  ← SQLAlchemy ORM queries and raw SQL
 ```
 
-New endpoints must apply `@global_exception_handler` from `app.common.common.exception_handler`. This catches all exceptions (including `ScalarException`, `SQLAlchemyError`, and Marshmallow validation errors) and converts them to a structured `{"status": false, "message": "..."}` JSON response.
+New endpoints must apply `@global_exception_handler` from `app.common.exception_handler`. This catches all exceptions (including `ScalarException`, `SQLAlchemyError`, and Marshmallow validation errors) and converts them to a structured `{"status": false, "message": "..."}` JSON response.
 
-## Common Layer (`app/common/common/`)
+## Common Layer (`app/common/`)
 
 Key utilities used across all modules:
 

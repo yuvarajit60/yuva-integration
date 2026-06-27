@@ -8,7 +8,12 @@
             "options": {
                 "shell": {
                     "executable": "powershell.exe",
-                    "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
+                    "args": [
+                        "-NoProfile",
+                        "-ExecutionPolicy",
+                        "Bypass",
+                        "-Command"
+                    ]
                 },
                 "cwd": "${workspaceFolder}"
             },
@@ -37,15 +42,24 @@
             "dependsOn": "pip install (functions)"
         },
         {
+            "type": "func",
+            "label": "func: host start",
+            "command": "host start",
+            "problemMatcher": "$func-python-watch",
+            "isBackground": true,
+            "dependsOn": "pip install (functions)"
+        },
+        {
             "label": "pip install (functions)",
             "type": "shell",
-            "command": "${workspaceFolder}\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt",
-            "options": {
-                "shell": {
-                    "executable": "powershell.exe",
-                    "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
-                },
-                "cwd": "${workspaceFolder}"
+            "osx": {
+                "command": "${config:azureFunctions.pythonVenv}/bin/python -m pip install -r requirements.txt"
+            },
+            "windows": {
+                "command": "${config:azureFunctions.pythonVenv}\\Scripts\\python -m pip install -r requirements.txt --trusted-host pypi.org --trusted-host files.pythonhosted.org pip setuptools"
+            },
+            "linux": {
+                "command": "${config:azureFunctions.pythonVenv}/bin/python -m pip install -r requirements.txt"
             },
             "problemMatcher": []
         }

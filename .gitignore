@@ -23,3 +23,5 @@ obj/
 *.egg-info/
 dist/
 build/
+
+.python_packages

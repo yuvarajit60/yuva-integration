@@ -70,6 +70,12 @@ from app.test.testfetchassetsfromassetgroup import fetchassetsfromassetgroup_bp
 from app.test.testlogger import test_logger_bp
 from app.test.testloggerqueue import logger_queue_bp
 
+#Logic App
+from app.logic_apps.datasync_durable.datasync_trigger_bp import datasync_start_bp
+from app.logic_apps.datasync_durable.datasync_orchestrator_bp import datasync_orc_bp
+from app.logic_apps.datasync_durable.datasync_activities_bp import datasync_activities_bp
+from app.logic_apps.logicapp_monitor_bp import logicapp_monitor_bp
+
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 
 # Assets
@@ -134,3 +140,9 @@ app.register_blueprint(sync_SKY_TIP_User_bp)
 app.register_blueprint(fetchassetsfromassetgroup_bp)
 app.register_blueprint(test_logger_bp)
 app.register_blueprint(logger_queue_bp)
+
+#Logic App
+app.register_blueprint(datasync_start_bp)
+app.register_blueprint(datasync_orc_bp)
+app.register_blueprint(datasync_activities_bp)
+app.register_blueprint(logicapp_monitor_bp)

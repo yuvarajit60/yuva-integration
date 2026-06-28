@@ -1,0 +1,745 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Scope_Data_Sync": {
+                "type": "Scope",
+                "actions": {
+                    "HTTP_Webhook-Asset_Data_Sync": {
+                        "type": "HttpWebhook",
+                        "inputs": {
+                            "subscribe": {
+                                "method": "POST",
+                                "uri": "https://yuva-dev-function.azurewebsites.net/api/durabledatasync",
+                                "body": {
+                                    "callbackUrl": "@{listCallbackUrl()}",
+                                    "processName": "Asset_Data_Sync"
+                                },
+                                "headers": {
+                                    "Content-Type": "application/json",
+                                    "x-functions-key": ""
+                                }
+                            }
+                        },
+                        "limit": {
+                            "timeout": "PT31M"
+                        }
+                    },
+                    "HTTP_Webhook-Session_Data_Sync": {
+                        "type": "HttpWebhook",
+                        "inputs": {
+                            "subscribe": {
+                                "method": "POST",
+                                "uri": "https://yuva-dev-function.azurewebsites.net/api/durabledatasync",
+                                "body": {
+                                    "callbackUrl": "@{listCallbackUrl()}",
+                                    "processName": "Session_Data_Sync"
+                                },
+                                "headers": {
+                                    "Content-Type": "application/json",
+                                    "x-functions-key": ""
+                                }
+                            }
+                        },
+                        "limit": {
+                            "timeout": "PT31M"
+                        }
+                    },
+                    "Check_if_data_sync_fails": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "equals": [
+                                        "@body('HTTP_Webhook-Asset_Data_Sync')",
+                                        "Asset sync successful"
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {},
+                        "else": {
+                            "actions": {
+                                "Terminate_if_Asset_data_sync_failed": {
+                                    "type": "Terminate",
+                                    "inputs": {
+                                        "runStatus": "Failed",
+                                        "runError": {
+                                            "code": "Asset Data Sync Failed",
+                                            "message": "Asset Data Sync Failed"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Call_workflow_in_this_logic_app-asset_sync_failed": [
+                                            "SUCCEEDED"
+                                        ]
+                                    }
+                                },
+                                "Call_workflow_in_this_logic_app-asset_sync_failed": {
+                                    "type": "Workflow",
+                                    "inputs": {
+                                        "host": {
+                                            "workflow": {
+                                                "id": "wf_dev_Notifications"
+                                            }
+                                        },
+                                        "body": {
+                                            "Execution Status": "Failed",
+                                            "Recipients": "@join(variables('EmailRecipicients'),';')",
+                                            "Job Failed": "Scalar",
+                                            "Process Name": "Asset Data Sync",
+                                            "Error Details": "@body('HTTP_Webhook-Asset_Data_Sync')",
+                                            "Subject Line": "DEV - Scalar Job Failure: Asset Data Sync Failed"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "HTTP_Webhook-Asset_Data_Sync": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Check_if_session_data_sync_fails": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "equals": [
+                                        "@trim(body('HTTP_Webhook-Session_Data_Sync'))",
+                                        "Session sync successful"
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {},
+                        "else": {
+                            "actions": {
+                                "Terminate_if_session_data_sync_failed": {
+                                    "type": "Terminate",
+                                    "inputs": {
+                                        "runStatus": "Failed",
+                                        "runError": {
+                                            "code": "Session Data Sync Failed",
+                                            "message": "Session Data Sync Failed"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Call_workflow_in_this_logic_app-session_sync_failed": [
+                                            "SUCCEEDED"
+                                        ]
+                                    }
+                                },
+                                "Call_workflow_in_this_logic_app-session_sync_failed": {
+                                    "type": "Workflow",
+                                    "inputs": {
+                                        "host": {
+                                            "workflow": {
+                                                "id": "wf_dev_Notifications"
+                                            }
+                                        },
+                                        "body": {
+                                            "Execution Status": "Failed",
+                                            "Recipients": "@join(variables('EmailRecipicients'),';')",
+                                            "Job Failed": "Scalar",
+                                            "Process Name": "Session Data Sync",
+                                            "Error Details": "@body('HTTP_Webhook-Session_Data_Sync')",
+                                            "Subject Line": "DEV - Scalar Job Failure: Session Data Sync Failed"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "HTTP_Webhook-Session_Data_Sync": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Call_workflow_in_this_logic_app-Asset": {
+                        "type": "Workflow",
+                        "inputs": {
+                            "host": {
+                                "workflow": {
+                                    "id": "wf_dev_Notifications"
+                                }
+                            },
+                            "body": {
+                                "Execution Status": "Failed",
+                                "Recipients": "@join(variables('EmailRecipicients'),';')",
+                                "Job Failed": "Scalar",
+                                "Process Name": "Asset Data Sync",
+                                "Error Details": "@if(equals(actions('HTTP_Webhook-Asset_Data_Sync').status,'TimedOut'),\n'Asset Data Sync timed out while waiting for callback response',\ncoalesce(actions('HTTP_Webhook-Asset_Data_Sync').error.message,\n  'Asset Data Sync failed'))",
+                                "Subject Line": "DEV - Scalar Job Failure: Asset Data Sync Failed"
+                            }
+                        },
+                        "runAfter": {
+                            "HTTP_Webhook-Asset_Data_Sync": [
+                                "TIMEDOUT",
+                                "FAILED"
+                            ]
+                        }
+                    },
+                    "Terminate_if_Asset_data_sync_timed_out": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Failed",
+                            "runError": {
+                                "code": "Asset Data Sync Timed out",
+                                "message": "Asset Data Sync Timed out"
+                            }
+                        },
+                        "runAfter": {
+                            "Call_workflow_in_this_logic_app-Asset": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Call_workflow_in_this_logic_app-Session": {
+                        "type": "Workflow",
+                        "inputs": {
+                            "host": {
+                                "workflow": {
+                                    "id": "wf_dev_Notifications"
+                                }
+                            },
+                            "body": {
+                                "Execution Status": "Failed",
+                                "Recipients": "@join(variables('EmailRecipicients'),';')",
+                                "Job Failed": "Scalar",
+                                "Process Name": "Session Data Sync",
+                                "Error Details": "@if(equals(actions('HTTP_Webhook-Session_Data_Sync').status,'TimedOut'),\n'Session Data Sync timed out while waiting for callback response',\ncoalesce(actions('HTTP_Webhook-Session_Data_Sync').error.message,\n  'Session Data Sync failed'))",
+                                "Subject Line": "DEV - Scalar Job Failure: Session Data Sync Failed"
+                            }
+                        },
+                        "runAfter": {
+                            "HTTP_Webhook-Session_Data_Sync": [
+                                "TIMEDOUT",
+                                "FAILED"
+                            ]
+                        }
+                    },
+                    "Terminate_if_session_data_sync_timed_out": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Failed",
+                            "runError": {
+                                "code": "Session Data Sync Timed out",
+                                "message": "Session Data Sync Timed out"
+                            }
+                        },
+                        "runAfter": {
+                            "Call_workflow_in_this_logic_app-Session": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variables": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Execute_a_SQL_query_(V2)": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "sql-1"
+                        }
+                    },
+                    "method": "post",
+                    "body": {
+                        "query": "Select 'Fact_Unit' Table_Name,case when count(*) >=100 then 'True' else 'False' end Load_Status from SCALAR.Fact_Unit\nWhere convert(date,SC_Insert_Date) = convert(date,getdate())\nUnion\nSelect 'Fact_LeaseRate' Table_Name,case when count(*) >=100 then 'True' else 'False' end Load_Status from SCALAR.Fact_LeaseRate\nWhere convert(date,SC_Insert_Date) = convert(date,getdate())\nUnion\nSelect 'Fact_Interchange' Table_Name,case when count(*) >=100 then 'True' else 'False' end Load_Status from SCALAR.Fact_Interchange\nWhere convert(date,SC_Insert_Date) = convert(date,getdate())\nUnion\nSelect 'Additional_Charges' Table_Name,case when count(*) >=100 then 'True' else 'False' end Load_Status from SCALAR.Additional_Charges\nWhere convert(date,SC_Insert_Date) = convert(date,getdate())"
+                    },
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/query/sql"
+                },
+                "runAfter": {
+                    "Scope_Data_Sync": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Filter_array": {
+                "type": "Query",
+                "inputs": {
+                    "from": "@body('Execute_a_SQL_query_(V2)')?['ResultSets']?['Table1']",
+                    "where": "@equals(toLower(item()?['Load_Status']),'false')"
+                },
+                "runAfter": {
+                    "Execute_a_SQL_query_(V2)": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Condition": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@length(body('Filter_array'))",
+                                0
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Scope_Job_process": {
+                        "type": "Scope",
+                        "actions": {
+                            "Call_an_Azure_function_Auto_Pairing_Report": {
+                                "type": "Function",
+                                "inputs": {
+                                    "method": "GET",
+                                    "function": {
+                                        "connectionName": "azureFunctionOperation"
+                                    },
+                                    "retryPolicy": {
+                                        "type": "none"
+                                    }
+                                }
+                            },
+                            "Scope": {
+                                "type": "Scope",
+                                "actions": {
+                                    "Call_an_Azure_function_Interchanging_In_Units": {
+                                        "type": "Function",
+                                        "inputs": {
+                                            "method": "POST",
+                                            "function": {
+                                                "connectionName": "azureFunctionOperation-1"
+                                            },
+                                            "retryPolicy": {
+                                                "type": "none"
+                                            }
+                                        }
+                                    },
+                                    "Call_an_Azure_function_Interchanging_Out_Units": {
+                                        "type": "Function",
+                                        "inputs": {
+                                            "method": "POST",
+                                            "function": {
+                                                "connectionName": "azureFunctionOperation-2"
+                                            },
+                                            "retryPolicy": {
+                                                "type": "none"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Call_an_Azure_function_Interchanging_In_Units": [
+                                                "SUCCEEDED",
+                                                "TIMEDOUT",
+                                                "SKIPPED",
+                                                "FAILED"
+                                            ]
+                                        }
+                                    },
+                                    "Call_an_Azure_function_Copy_Move_Along_Units": {
+                                        "type": "Function",
+                                        "inputs": {
+                                            "method": "POST",
+                                            "function": {
+                                                "connectionName": "azureFunctionOperation-3"
+                                            },
+                                            "retryPolicy": {
+                                                "type": "none"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Call_an_Azure_function_Interchanging_Out_Units": [
+                                                "SUCCEEDED",
+                                                "TIMEDOUT",
+                                                "SKIPPED",
+                                                "FAILED"
+                                            ]
+                                        }
+                                    },
+                                    "Call_an_Azure_function_New_Pairing_Insight_Units": {
+                                        "type": "Function",
+                                        "inputs": {
+                                            "method": "POST",
+                                            "function": {
+                                                "connectionName": "azureFunctionOperation-4"
+                                            },
+                                            "retryPolicy": {
+                                                "type": "none"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Call_an_Azure_function_Copy_Move_Along_Units": [
+                                                "SUCCEEDED",
+                                                "TIMEDOUT",
+                                                "SKIPPED",
+                                                "FAILED"
+                                            ]
+                                        }
+                                    }
+                                }
+                            },
+                            "Delay_before_Brake_Performance_data_sync": {
+                                "type": "Wait",
+                                "inputs": {
+                                    "interval": {
+                                        "count": 20,
+                                        "unit": "Minute"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Scope": [
+                                        "SUCCEEDED",
+                                        "TIMEDOUT",
+                                        "SKIPPED",
+                                        "FAILED"
+                                    ]
+                                }
+                            },
+                            "Call_an_Azure_function_Activate_brake_performance": {
+                                "type": "Function",
+                                "inputs": {
+                                    "method": "POST",
+                                    "function": {
+                                        "connectionName": "azureFunctionOperation-5"
+                                    },
+                                    "retryPolicy": {
+                                        "type": "none"
+                                    }
+                                },
+                                "runAfter": {
+                                    "check_if_Brake_Performance_sync_fails": [
+                                        "SUCCEEDED"
+                                    ]
+                                }
+                            },
+                            "HTTP_Webhook-Brake_Performance_Data_Sync": {
+                                "type": "HttpWebhook",
+                                "inputs": {
+                                    "subscribe": {
+                                        "method": "POST",
+                                        "uri": "https://yuva-dev-function.azurewebsites.net/api/durabledatasync",
+                                        "body": {
+                                            "callbackUrl": "@{listCallbackUrl()}",
+                                            "processName": "BrakePerformance_Data_Sync"
+                                        },
+                                        "headers": {
+                                            "Content-Type": "application/json",
+                                            "x-functions-key": ""
+                                        }
+                                    }
+                                },
+                                "runAfter": {
+                                    "Delay_before_Brake_Performance_data_sync": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "limit": {
+                                    "timeout": "PT31M"
+                                }
+                            },
+                            "check_if_Brake_Performance_sync_fails": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "equals": [
+                                                "@body('HTTP_Webhook-Brake_Performance_Data_Sync')",
+                                                "Brake Performance sync successful"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {},
+                                "else": {
+                                    "actions": {
+                                        "Terminate_if_Brake_Performance_sync_fails": {
+                                            "type": "Terminate",
+                                            "inputs": {
+                                                "runStatus": "Failed",
+                                                "runError": {
+                                                    "code": "Data Sync Failed",
+                                                    "message": "Brake Performance sync Failed"
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "Call_workflow_in_this_logic_app_-_BP_Sync_fail": [
+                                                    "SUCCEEDED"
+                                                ]
+                                            }
+                                        },
+                                        "Call_workflow_in_this_logic_app_-_BP_Sync_fail": {
+                                            "type": "Workflow",
+                                            "inputs": {
+                                                "host": {
+                                                    "workflow": {
+                                                        "id": "wf_dev_Notifications"
+                                                    }
+                                                },
+                                                "body": {
+                                                    "Execution Status": "Failed",
+                                                    "Recipients": "@join(variables('EmailRecipicients'),';')",
+                                                    "Job Failed": "Scalar",
+                                                    "Process Name": "Brake Performance Data Sync",
+                                                    "Error Details": "@body('HTTP_Webhook-Brake_Performance_Data_Sync')",
+                                                    "Subject Line": "DEV - Scalar Job Failure: Brake Performance Data Sync Failed"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "runAfter": {
+                                    "HTTP_Webhook-Brake_Performance_Data_Sync": [
+                                        "SUCCEEDED"
+                                    ]
+                                }
+                            },
+                            "Call_an_Azure_function_deactivate_brake_performance": {
+                                "type": "Function",
+                                "inputs": {
+                                    "method": "POST",
+                                    "function": {
+                                        "connectionName": "azureFunctionOperation-6"
+                                    },
+                                    "retryPolicy": {
+                                        "type": "none"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Call_an_Azure_function_Activate_brake_performance": [
+                                        "SUCCEEDED",
+                                        "TIMEDOUT",
+                                        "SKIPPED",
+                                        "FAILED"
+                                    ]
+                                }
+                            },
+                            "Call_workflow_in_this_logic_app-Brake_Performance_Data_Sync": {
+                                "type": "Workflow",
+                                "inputs": {
+                                    "host": {
+                                        "workflow": {
+                                            "id": "wf_dev_Notifications"
+                                        }
+                                    },
+                                    "body": {
+                                        "Execution Status": "Failed",
+                                        "Recipients": "@join(variables('EmailRecipicients'),';')",
+                                        "Job Failed": "Scalar",
+                                        "Process Name": "Brake Performance Data Sync",
+                                        "Error Details": "@coalesce(actions('HTTP_Webhook-Brake_Performance_Data_Sync').error.message,'Brake Performance data sync Callback response timed out')",
+                                        "Subject Line": "DEV - Scalar Job Failure: Brake Performance Data Sync Failed"
+                                    }
+                                },
+                                "runAfter": {
+                                    "HTTP_Webhook-Brake_Performance_Data_Sync": [
+                                        "TIMEDOUT",
+                                        "FAILED"
+                                    ]
+                                }
+                            },
+                            "Terminate_if_Brake_Performance_data_sync_timed_out": {
+                                "type": "Terminate",
+                                "inputs": {
+                                    "runStatus": "Failed",
+                                    "runError": {
+                                        "code": "Brake Performance data sync Timed out",
+                                        "message": "Brake Performance data sync Timed out"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Call_workflow_in_this_logic_app-Brake_Performance_Data_Sync": [
+                                        "SUCCEEDED"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "HTTP_Webhook_-_user_data_sync": {
+                        "type": "HttpWebhook",
+                        "inputs": {
+                            "subscribe": {
+                                "method": "POST",
+                                "uri": "https://yuva-dev-function.azurewebsites.net/api/durabledatasync",
+                                "body": {
+                                    "callbackUrl": "@{listCallbackUrl()}",
+                                    "processName": "User_Data_Sync"
+                                },
+                                "headers": {
+                                    "Content-Type": "application/json",
+                                    "x-functions-key": ""
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Scope_Job_process": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "limit": {
+                            "timeout": "PT31M"
+                        }
+                    },
+                    "check_if_user_data_sync_fails": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "equals": [
+                                        "@body('HTTP_Webhook_-_user_data_sync')",
+                                        "User sync successful"
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {},
+                        "else": {
+                            "actions": {
+                                "Terminate_if_User_sync_fail": {
+                                    "type": "Terminate",
+                                    "inputs": {
+                                        "runStatus": "Failed",
+                                        "runError": {
+                                            "code": "Data Sync Failed",
+                                            "message": "User sync Failed"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Call_workflow_in_this_logic_app-user_data_sync_failed": [
+                                            "SUCCEEDED"
+                                        ]
+                                    }
+                                },
+                                "Call_workflow_in_this_logic_app-user_data_sync_failed": {
+                                    "type": "Workflow",
+                                    "inputs": {
+                                        "host": {
+                                            "workflow": {
+                                                "id": "wf_dev_Notifications"
+                                            }
+                                        },
+                                        "body": {
+                                            "Execution Status": "Failed",
+                                            "Recipients": "@join(variables('EmailRecipicients'),';')",
+                                            "Job Failed": "Scalar",
+                                            "Process Name": "User Data Sync Failed",
+                                            "Error Details": "@body('HTTP_Webhook_-_user_data_sync')",
+                                            "Subject Line": "DEV - Scalar Job Failure: User Data Sync Failed"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "HTTP_Webhook_-_user_data_sync": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Call_workflow_in_this_logic_app-user": {
+                        "type": "Workflow",
+                        "inputs": {
+                            "host": {
+                                "workflow": {
+                                    "id": "wf_dev_Notifications"
+                                }
+                            },
+                            "body": {
+                                "Execution Status": "Failed",
+                                "Recipients": "@join(variables('EmailRecipicients'),';')",
+                                "Job Failed": "Scalar",
+                                "Process Name": "User Data Sync",
+                                "Error Details": "@coalesce(actions('HTTP_Webhook_-_user_data_sync').error.message,'User data sync Callback response timed out')",
+                                "Subject Line": "DEV - Scalar Job Failure: User Data Sync Failed"
+                            }
+                        },
+                        "runAfter": {
+                            "HTTP_Webhook_-_user_data_sync": [
+                                "TIMEDOUT"
+                            ]
+                        }
+                    },
+                    "Terminate_if_user_data_sync_timed_out": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Failed",
+                            "runError": {
+                                "code": "User Data Sync Timed out",
+                                "message": "User Data Sync Timed out"
+                            }
+                        },
+                        "runAfter": {
+                            "Call_workflow_in_this_logic_app-user": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {
+                        "Call_workflow_in_this_logic_app-Scalar_tables_upload_failed": {
+                            "type": "Workflow",
+                            "inputs": {
+                                "host": {
+                                    "workflow": {
+                                        "id": "wf_dev_Notifications"
+                                    }
+                                },
+                                "body": {
+                                    "Execution Status": "failed",
+                                    "Recipients": "@join(variables('EmailRecipicients'),';')",
+                                    "Job Failed": "Scalar",
+                                    "Process Name": "Scalar tables upload failed",
+                                    "Error Details": "@body('Execute_a_SQL_query_(V2)')?['resultsets']?['Table1']",
+                                    "Subject Line": "DEV - Scalar Job Failure"
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Filter_array": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_variables": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "EmailRecipicients",
+                            "type": "array",
+                            "value": [
+                                "yuvarajit60@gmail.com",
+                                "yuvaraj-periyasamy@outlook.com"
+                            ]
+                        }
+                    ]
+                },
+                "runAfter": {}
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "Recurrence": {
+                "type": "Recurrence",
+                "recurrence": {
+                    "interval": 1,
+                    "frequency": "Day",
+                    "timeZone": "W. Europe Standard Time",
+                    "schedule": {
+                        "hours": [
+                            6
+                        ],
+                        "minutes": [
+                            0
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "kind": "Stateful"
+}

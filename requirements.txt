@@ -19,4 +19,5 @@ openpyxl
 cryptography==43.0.3
 msal
 sendgrid
+anthropic
 debugpy

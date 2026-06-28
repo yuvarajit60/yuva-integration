@@ -28,10 +28,14 @@ az rest --method GET \
   --url "https://management.azure.com/subscriptions/9cdd2afb-3b70-4069-808d-fe9f81f92445/resourceGroups/YuvaTestGroup/providers/Microsoft.Web/sites/Yuva-Dev-DataSync/hostruntime/runtime/webhooks/workflow/api/management/workflows/wf_dev_DataSync/runs?api-version=2022-03-01&$top=1"
 ```
 
-- If the latest run status is `Succeeded` → **stop here, nothing to do.**
-- If the status is `Failed`, `TimedOut`, or `Cancelled` → **proceed to Step 2.**
+Evaluate the result:
 
-Capture the failed run ID and the name of the failed action from the run details:
+- If the status is `Running` → **skip this run and check again later.**
+- If the status is `Failed`, `TimedOut`, or `Cancelled` → **Logic App itself failed. Proceed to Step 2 to find the failed action and root cause.**
+- If the status is `Succeeded` → **do NOT stop here.** Always proceed to Step 2 and check Application Insights for internal function errors. A Succeeded Logic App run means all function calls returned HTTP 200 — but functions can catch internal exceptions, log them, and still return 200. These internal errors (e.g. `unknown_errors` in the report email, `KeyError` caught inside business logic) are only visible in Application Insights invocation logs, not in the Logic App run status.
+- Only skip sending an email if the run is `Succeeded` **AND** Application Insights has zero exceptions and zero error-level traces.
+
+Capture the run ID and the individual action statuses from the run details:
 
 ```bash
 az rest --method GET \
@@ -40,7 +44,9 @@ az rest --method GET \
 
 ---
 
-### Step 2 — Check Function App Invocations
+### Step 2 — Check Function App Invocations (Always Run — Regardless of Logic App Status)
+
+**This step runs even when the Logic App status is `Succeeded`.** Functions return HTTP 200 even when they catch internal exceptions. Application Insights always contains the true picture.
 
 The Logic App calls `Yuva-Dev-Function` via two mechanisms:
 
@@ -83,8 +89,14 @@ az monitor app-insights query \
 
 Filter results by the function name(s) from the tables above to narrow down the root cause.
 
-- If no errors found in Application Insights → the failure is likely a **timeout** (function ran too long). Note this as the error reason.
-- If errors found → capture the exception type, message, and stack trace.
+**Interpreting App Insights results:**
+
+- **Logic App Failed + App Insights has errors** → Standard failure. The exception from App Insights is the root cause of the HTTP error returned to the Logic App.
+- **Logic App Succeeded + App Insights has errors** → Internal function error. The function caught the exception internally (e.g. inside `execute_data_sharing()` or `start_data_sharing()`), logged it via `logger.error`, and still returned HTTP 200. These errors appear as `unknown_errors` in the function's report email. The Logic App sees success but the business operation partially failed. **This is the case described in Pattern 1 of the Known Error Patterns section.**
+- **Logic App Succeeded + No App Insights errors** → Truly clean run. Nothing to report.
+- **Logic App Failed + No App Insights errors** → The failure is likely a **timeout** (function ran too long). Note this as the error reason.
+
+Always capture the full exception type, message, file path, line number, and stack trace from App Insights.
 
 ---
 
@@ -175,6 +187,75 @@ curl -X POST https://api.sendgrid.com/v3/mail/send \
     "content": [{"type": "text/html", "value": "{html_body}"}]
   }'
 ```
+
+---
+
+## Known Error Patterns
+
+The following errors have been observed in production. When you detect a matching exception, apply the diagnosis directly — do not re-derive from scratch.
+
+---
+
+### Pattern 1 — `KeyError: 'providerAssetId'` in `session_helpers.py`
+
+**Observed:** 2026-06-26, `Copy_Move_Along_Units` (PROD).
+
+**Execution message in report email:** `'providerAssetId'`
+
+**Application Insights exception signature:**
+```
+KeyError: 'providerAssetId'
+  File "app/common/helpers/session_helpers.py", line 56, in start_data_sharing
+    running_session_found = all_sessions_df.loc[response_dict['assetId'] == all_sessions_df['providerAssetId']].to_dict(orient='records')
+```
+
+**Root cause:**
+`get_session_data_by_framework()` in `session_helpers.py` (line 125–145) initialises `session_data = pd.DataFrame()` — an empty DataFrame with **no columns**. If the Scalar `get_all_sessions_for_a_framework` API returns zero items (no sessions in 'running' state at that exact moment — a timing race condition), `pd.concat` is never called and the function returns a column-less empty DataFrame. When `start_data_sharing()` then accesses `all_sessions_df['providerAssetId']` at line 56, pandas raises `KeyError` because the column does not exist.
+
+This is a **timing race condition** — sessions may have been created by the earlier `create_session` API calls but have not transitioned to `running` status yet when the framework query runs immediately after.
+
+**Impact from 2026-06-26 production run:**
+- 59 total units processed, 1 unknown error, 3 successfully data-shared, 37 already data-shared.
+- The `KeyError` caused 1 unit to be counted under `unknown_errors` in the report.
+
+**Files involved:**
+- `app/common/helpers/session_helpers.py` — line 52 (`get_session_data_by_framework` call) and line 56 (the failing `all_sessions_df['providerAssetId']` access)
+- `app/common/helpers/datasharing_helper.py` — line 178 (`start_data_sharing` caller inside `execute_data_sharing`)
+
+**Functions affected by this shared helper (all share the same root cause):**
+- `Call_an_Azure_function_Copy_Move_Along_Units` → `copy_move_along_services.py` → `execute_data_sharing()`
+- `Call_an_Azure_function_Interchanging_In_Units` → `interchange_in_units_services.py` → `execute_data_sharing()`
+- `Call_an_Azure_function_Interchanging_Out_Units` → `interchange_out_units_services.py` → `execute_data_sharing()`
+- `Call_an_Azure_function_New_Pairing_Insight_Units` → `new_pairing_services.py` → `execute_data_sharing()`
+
+**In the diagnosis email, report:**
+1. The error is a timing race condition in `session_helpers.py` — the `providerAssetId` column is missing because the Scalar API returned zero running sessions at the time of the call.
+2. The affected file and line number (`session_helpers.py` line 52–56).
+3. The root cause: `get_session_data_by_framework()` returns a column-less empty DataFrame when the API has no items, and the column guard is missing.
+4. Recommend the developer review `session_helpers.py` around line 52 and add a guard to ensure the DataFrame has the expected column schema before iterating `response_dict_list`.
+
+**Diagnosis code to include in the email:**
+
+In `app/common/helpers/session_helpers.py`, inside `start_data_sharing()`, lines 51–52 — after calling `get_session_data_by_framework()`, add a guard so that if the Scalar API returns zero running sessions the DataFrame still has the required column structure:
+
+```python
+# BEFORE (broken — raises KeyError when API returns zero items)
+if len(response_dict_list)>0:
+    all_sessions_df = get_session_data_by_framework(access_token = access_token, agreement_id=agreement_id, status='running')
+
+# AFTER (fixed — ensures column schema exists even when API returns empty list)
+if len(response_dict_list) > 0:
+    all_sessions_df = get_session_data_by_framework(access_token=access_token, agreement_id=agreement_id, status='running')
+    # Guard: Scalar API may return zero running sessions (timing race) — ensure columns exist
+    if all_sessions_df.empty or 'providerAssetId' not in all_sessions_df.columns:
+        all_sessions_df = pd.DataFrame(columns=[
+            'sessionId', 'providerAssetId', 'consumerAssetId',
+            'providerOrgId', 'consumerOrgId', 'agreementId',
+            'status', 'realStart', 'realStop', 'vinNumber', 'providerUnitIds'
+        ])
+```
+
+**Why this fix works:** When the Scalar API returns no running sessions, `all_sessions_df` is initialised with the correct column schema. All subsequent `.loc[... == all_sessions_df['providerAssetId']]` calls return an empty result (correct — no match found), and the existing `len(running_session_found) > 0` guards handle it without error.
 
 ---
 
